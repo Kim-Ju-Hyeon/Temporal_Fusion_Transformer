@@ -1,0 +1,11 @@
+*.h5
+*.tar.gz
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+M5_Dataset/
+*.zip
+*.csv
+*.h5
+*/data/
+*.npz
+venv
