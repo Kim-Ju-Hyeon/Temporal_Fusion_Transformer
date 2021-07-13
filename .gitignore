@@ -6,7 +6,8 @@ M5_Dataset/
 *.zip
 *.csv
 *.h5
-*/data/
 *.npz
 venv
-NRI_data/
+NRI_Dataset/
+GTS_Dataset/
+.DS_Store

@@ -41,4 +41,4 @@ def slack_message(start, message):
         end = end + datetime.timedelta(hours=9)
         string_k = convert_seconds_to_kor_time(end - start)
         
-        send_slack_message(message + f"\n It takes {string_k}")
+        send_slack_message(message + f"\n 걸린 시간 {string_k}")
