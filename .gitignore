@@ -9,3 +9,4 @@ M5_Dataset/
 */data/
 *.npz
 venv
+NRI_data/
