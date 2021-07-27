@@ -1,0 +1,40 @@
+embeddings {
+  tensor_name: "Node:01800"
+  metadata_path: "01800/Node/metadata.tsv"
+  tensor_path: "01800/Node/tensors.tsv"
+}
+embeddings {
+  tensor_name: "store_id:01800"
+  metadata_path: "01800/store_id/metadata.tsv"
+  tensor_path: "01800/store_id/tensors.tsv"
+}
+embeddings {
+  tensor_name: "dept_id:01800"
+  metadata_path: "01800/dept_id/metadata.tsv"
+  tensor_path: "01800/dept_id/tensors.tsv"
+}
+embeddings {
+  tensor_name: "state_id:01800"
+  metadata_path: "01800/state_id/metadata.tsv"
+  tensor_path: "01800/state_id/tensors.tsv"
+}
+embeddings {
+  tensor_name: "cat_id:01800"
+  metadata_path: "01800/cat_id/metadata.tsv"
+  tensor_path: "01800/cat_id/tensors.tsv"
+}
+embeddings {
+  tensor_name: "special_days:01800"
+  metadata_path: "01800/special_days/metadata.tsv"
+  tensor_path: "01800/special_days/tensors.tsv"
+}
+embeddings {
+  tensor_name: "month:01800"
+  metadata_path: "01800/month/metadata.tsv"
+  tensor_path: "01800/month/tensors.tsv"
+}
+embeddings {
+  tensor_name: "snap_days:01800"
+  metadata_path: "01800/snap_days/metadata.tsv"
+  tensor_path: "01800/snap_days/tensors.tsv"
+}
