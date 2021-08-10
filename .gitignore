@@ -11,3 +11,4 @@ venv
 NRI_Dataset/
 GTS_Dataset/
 .DS_Store
+*.7z
