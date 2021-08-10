@@ -21,11 +21,7 @@ for the main experiments used in the publication.
 
 import os
 
-import data_formatters.electricity
-import data_formatters.favorita
-import data_formatters.traffic
-import data_formatters.volatility
-
+from data_formatters import favorita
 
 class ExperimentConfig(object):
   """Defines experiment configs and paths to outputs.
@@ -95,10 +91,10 @@ class ExperimentConfig(object):
     """
 
     data_formatter_class = {
-        'volatility': data_formatters.volatility.VolatilityFormatter,
-        'electricity': data_formatters.electricity.ElectricityFormatter,
-        'traffic': data_formatters.traffic.TrafficFormatter,
-        'favorita': data_formatters.favorita.FavoritaFormatter
+        # 'volatility': data_formatters.volatility.VolatilityFormatter,
+        # 'electricity': data_formatters.electricity.ElectricityFormatter,
+        # 'traffic': data_formatters.traffic.TrafficFormatter,
+        'favorita': favorita.FavoritaFormatter
     }
 
     return data_formatter_class[self.experiment]()
