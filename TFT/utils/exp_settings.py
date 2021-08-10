@@ -20,7 +20,6 @@ for the main experiments used in the publication.
 """
 
 import os
-
 from data_formatters import favorita
 
 class ExperimentConfig(object):

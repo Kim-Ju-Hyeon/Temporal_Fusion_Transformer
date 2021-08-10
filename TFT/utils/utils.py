@@ -20,9 +20,7 @@ import os
 import pathlib
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
-
+import torch
 
 # Generic.
 def get_single_col_by_input_type(input_type, column_definition):
@@ -58,7 +56,7 @@ def extract_cols_from_data_type(data_type, column_definition,
 
 
 # Loss functions.
-def tensorflow_quantile_loss(y, y_pred, quantile):
+def pytorch_quantile_loss(y, y_pred, quantile):
   """Computes quantile loss for tensorflow.
   Standard quantile loss as defined in the "Training Procedure" section of
   the main TFT paper
@@ -77,10 +75,11 @@ def tensorflow_quantile_loss(y, y_pred, quantile):
             quantile))
 
   prediction_underflow = y - y_pred
-  q_loss = quantile * tf.maximum(prediction_underflow, 0.) + (
-      1. - quantile) * tf.maximum(-prediction_underflow, 0.)
+  q_loss = quantile * torch.max(prediction_underflow, torch.zeros_like(prediction_underflow)) + (
+      1. - quantile) * torch.max(-prediction_underflow, torch.zeros_like(prediction_underflow))
 
-  return tf.reduce_sum(q_loss, axis=-1)
+  return torch.sum(q_loss, axis=-1)
+
 
 
 def numpy_normalised_quantile_loss(y, y_pred, quantile):
@@ -112,106 +111,3 @@ def create_folder_if_not_exist(directory):
   """
   # Also creates directories recursively
   pathlib.Path(directory).mkdir(parents=True, exist_ok=True)
-
-
-# Tensorflow related functions.
-def get_default_tensorflow_config(tf_device='gpu', gpu_id=0):
-  """Creates tensorflow config for graphs to run on CPU or GPU.
-  Specifies whether to run graph on gpu or cpu and which GPU ID to use for multi
-  GPU machines.
-  Args:
-    tf_device: 'cpu' or 'gpu'
-    gpu_id: GPU ID to use if relevant
-  Returns:
-    Tensorflow config.
-  """
-
-  if tf_device == 'cpu':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # for training on cpu
-    tf_config = tf.ConfigProto(
-        log_device_placement=False, device_count={'GPU': 0})
-
-  else:
-    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
-
-    print('Selecting GPU ID={}'.format(gpu_id))
-
-    tf_config = tf.ConfigProto(log_device_placement=False)
-    tf_config.gpu_options.allow_growth = True
-
-  return tf_config
-
-
-def save(tf_session, model_folder, cp_name, scope=None):
-  """Saves Tensorflow graph to checkpoint.
-  Saves all trainiable variables under a given variable scope to checkpoint.
-  Args:
-    tf_session: Session containing graph
-    model_folder: Folder to save models
-    cp_name: Name of Tensorflow checkpoint
-    scope: Variable scope containing variables to save
-  """
-  # Save model
-  if scope is None:
-    saver = tf.train.Saver()
-  else:
-    var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
-    saver = tf.train.Saver(var_list=var_list, max_to_keep=100000)
-
-  save_path = saver.save(tf_session,
-                         os.path.join(model_folder, '{0}.ckpt'.format(cp_name)))
-  print('Model saved to: {0}'.format(save_path))
-
-
-def load(tf_session, model_folder, cp_name, scope=None, verbose=False):
-  """Loads Tensorflow graph from checkpoint.
-  Args:
-    tf_session: Session to load graph into
-    model_folder: Folder containing serialised model
-    cp_name: Name of Tensorflow checkpoint
-    scope: Variable scope to use.
-    verbose: Whether to print additional debugging information.
-  """
-  # Load model proper
-  load_path = os.path.join(model_folder, '{0}.ckpt'.format(cp_name))
-
-  print('Loading model from {0}'.format(load_path))
-
-  print_weights_in_checkpoint(model_folder, cp_name)
-
-  initial_vars = set(
-      [v.name for v in tf.get_default_graph().as_graph_def().node])
-
-  # Saver
-  if scope is None:
-    saver = tf.train.Saver()
-  else:
-    var_list = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
-    saver = tf.train.Saver(var_list=var_list, max_to_keep=100000)
-  # Load
-  saver.restore(tf_session, load_path)
-  all_vars = set([v.name for v in tf.get_default_graph().as_graph_def().node])
-
-  if verbose:
-    print('Restored {0}'.format(','.join(initial_vars.difference(all_vars))))
-    print('Existing {0}'.format(','.join(all_vars.difference(initial_vars))))
-    print('All {0}'.format(','.join(all_vars)))
-
-  print('Done.')
-
-
-def print_weights_in_checkpoint(model_folder, cp_name):
-  """Prints all weights in Tensorflow checkpoint.
-  Args:
-    model_folder: Folder containing checkpoint
-    cp_name: Name of checkpoint
-  Returns:
-  """
-  load_path = os.path.join(model_folder, '{0}.ckpt'.format(cp_name))
-
-  print_tensors_in_checkpoint_file(
-      file_name=load_path,
-      tensor_name='',
-      all_tensors=True,
-      all_tensor_names=True)
